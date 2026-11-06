@@ -27,3 +27,12 @@ export async function createLandmarkEngine(): Promise<LandmarkEngine> {
     close: () => landmarker.close(),
   };
 }
+
+export async function detectImageFace(image: HTMLImageElement) {
+  const fileset = await FilesetResolver.forVisionTasks(WASM_URL);
+  const landmarker = await FaceLandmarker.createFromOptions(fileset, {
+    baseOptions: { modelAssetPath: MODEL_URL, delegate: 'CPU' }, runningMode: 'IMAGE', numFaces: 1,
+  });
+  try { return landmarker.detect(image).faceLandmarks[0]; }
+  finally { landmarker.close(); }
+}

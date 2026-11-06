@@ -1,39 +1,41 @@
-# NEYA — Phase 1
+# NEYA
 
-This repository implements the first milestone of the NEYA PRD: a responsive React dashboard and a live face studio using the webcam and MediaPipe Face Landmarker. It does not yet detect makeup or provide virtual try-on, product recommendations, or voice guidance.
+NEYA is a browser based makeup studio. It currently provides live face tracking, photo and camera try-on, a personal product collection, saved looks, beauty preferences, and optional cloud sync. The current release uses free browser features and a Supabase Free project. It makes no OpenAI API calls.
 
 ## Run locally
 
-Requirements: Node.js 20+, a webcam, and a current browser with camera support.
+Use Node.js 20+ and a current browser. Camera access requires localhost or HTTPS.
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-Open the localhost URL printed by Vite. Choose **Open face studio**, then **Enable camera**. Allow access in the browser prompt. Switch between **Face mesh**, **Regions**, and **No overlay**. Move your head gently to check that the overlay follows. **End camera** stops the camera track.
+The two `VITE_SUPABASE_*` values in `.env.local` are the public Supabase project URL and publishable key. They enable email link sign-in and cloud sync. Without them, local collection, looks, and profile storage still work. The SQL schema is in `supabase/migrations/20261106_create_beauty_data.sql`; apply it to the Supabase project before using cloud sync.
 
-Camera access requires localhost or HTTPS. The MediaPipe WASM runtime loads from jsDelivr and the model loads from Google Storage, so the first use needs an internet connection. No raw video is stored or sent to a NEYA backend. Browser requests for the model and runtime are separate asset downloads.
+## What works
 
-## Commands
+- **Face studio:** live camera tracking and a subtle face mesh or region anchors.
+- **Explore looks:** upload a face photo or use the camera, try independent makeup layers, adjust shades, intensity, finish, and supported techniques, compare before and after or another saved look, and save a look.
+- **My Collection:** add, edit, search, filter, and remove owned or wishlisted products. Product colours can be used in Explore.
+- **Beauty Profile:** save style and assistance preferences, export data, delete data, choose whether product photos sync, and sign in for cloud sync.
+- **Saved Looks:** reopen, compare, rename, duplicate, and delete looks.
+- **Voice commands:** when enabled in Beauty Profile and supported by the browser, Explore accepts a category, starter shade, occasion, or “suggest”, “compare”, and “save”. Speech recognition support and network behavior depend on the browser.
+
+Data is saved in this browser immediately. After email sign-in, products, saved looks, and preferences sync to the user's row in Supabase. Row level security restricts access to the signed-in user. Uploaded face photos and camera frames are never saved by NEYA. Product photos remain local unless the user enables cloud photo sync.
+
+## Limits of this release
+
+Digital colour and placement are approximations, not exact physical product matches. Makeup progress detection, product recognition, conversational AI, a verified brand catalogue, and continuous voice guidance are not implemented. Starter shade suggestions are local rules, clearly labelled in the app. OpenAI integration requires an API key and an explicit decision to use any paid API quota; it is disabled to honor the free-only requirement.
+
+MediaPipe model and WASM assets download on first use. Camera quality should be checked on each target device and browser.
+
+## Checks
 
 ```bash
 npm run build
 npm test
-npm run preview
 ```
 
-## Project layout
-
-- `src/App.tsx`: dashboard and face studio interface
-- `src/hooks/useFaceSession.ts`: camera lifecycle and frame processing
-- `src/vision/faceLandmarker.ts`: MediaPipe model initialization
-- `src/vision/drawFace.ts`: mesh and region overlays
-- `src/vision/regions.ts`: facial landmark anchor mapping
-- `docs/`: architecture, development plan, and test instructions
-
-## Current limitations
-
-- Face regions are approximate landmark anchors; they are not semantic segmentation or makeup detection.
-- Detection runs on the browser main thread. A worker or GPU path should be evaluated if supported device benchmarks show dropped frames.
-- Camera and tracking behavior must be verified with a physical webcam on each target browser/device. Automated build and unit tests alone cannot prove live tracking quality.
+See `docs/architecture.md`, `docs/development-plan.md`, and `docs/testing.md` for implementation and verification details.

@@ -1,0 +1,10 @@
+.git
+.openai
+.vercel
+node_modules
+dist
+outputs
+work
+*.local
+*.tsbuildinfo
+.DS_Store

@@ -1,25 +1,19 @@
-# Development plan and status
+# Development status
 
-## Phase 1 — camera and face intelligence
+## Implemented
 
-Implemented in source:
+1. Responsive dashboard and live Face Studio with refined face mesh.
+2. Explore photo and live camera try-on with independent layers, placement techniques, shade controls, occasion starting points, before and after comparison, and saved looks.
+3. My Collection product management with photos, search, filters, ownership, and shade use in Explore.
+4. Beauty Profile preferences, optional browser voice commands, export and deletion controls.
+5. Supabase Free email link authentication and user scoped cloud data storage.
 
-- React and TypeScript application with responsive dashboard
-- Explicit camera permission request and error states
-- Webcam preview and camera stop lifecycle
-- MediaPipe Face Landmarker in video mode
-- Live mesh drawing and approximate eyes, lips, cheeks, nose, forehead, and jaw region anchors
-- Tracking status, landmark count, and observed processing rate
-- Model loading, face searching, permission denial, camera unavailable, and disconnect states
+## Remaining PRD capabilities
 
-Verification status is recorded in `testing.md`. Physical webcam verification is a required acceptance gate, not inferred from code or simulated frames.
+- Reliable detection of products or makeup application progress from the camera.
+- Conversational, context aware AI recommendations and product recognition.
+- Accurate product catalogue, shade matching, and cross brand alternatives.
+- Continuous spoken assistant and real time application feedback.
+- Calibration and broader accessibility and device testing.
 
-## Later phases, deferred
-
-2. Virtual makeup engine and independent makeup layers
-3. Face mapping guidance and techniques
-4. Collection and product data
-5. Voice and AI assistance
-6. Alternatives, exploration, and saved looks
-
-The dashboard labels later capabilities as coming soon. The current region overlay is a foundation for guidance, not a finished makeup placement recommendation.
+These require additional model, catalogue, design, and validation work. OpenAI API calls are disabled while the project is free-only.

@@ -1,22 +1,9 @@
-# Phase 1 architecture
+# NEYA architecture
 
-The repository was empty at the start of implementation. There was no existing frontend, backend, configuration, or working feature to preserve. Phase 1 therefore uses a small Vite, React, and TypeScript frontend. A backend is deferred because camera tracking runs in the browser and Phase 1 has no account, catalog, or AI services.
+NEYA is a Vite, React, and TypeScript web app. The live face studio and Explore preview run MediaPipe Face Landmarker in the browser. `src/vision/makeup.ts` draws translucent makeup layers on a canvas using face landmarks. This visual preview is intentionally approximate.
 
-## Data flow
+`src/data/beauty.ts` defines products, looks, and profile data. The app saves a versioned copy in localStorage. `src/cloud.ts` connects to Supabase only when public configuration is present. After email link authentication, `src/App.tsx` reads the user's `beauty_data` row, merges local products and looks, and debounces updates back to Supabase. The table has row level security policies for each user's own row. Product images are stripped from cloud payloads unless the profile explicitly permits photo sync. Face photos and camera frames are never included in saved data.
 
-1. The user explicitly starts camera access in the Face Studio.
-2. `useFaceSession` calls `getUserMedia` and attaches the stream to a muted, inline video element.
-3. `faceLandmarker.ts` loads the MediaPipe WASM runtime and Face Landmarker model, then configures one-face `VIDEO` mode with confidence thresholds.
-4. The frame loop calls `detectForVideo` only for new video frames and throttles requests to approximately 30 per second.
-5. `drawFace.ts` draws the MediaPipe tessellation or approximate region anchors on a canvas aligned to the `object-fit: cover` video crop. The video and canvas share the same mirrored container.
-6. Stopping the session closes the engine, stops media tracks, and clears the overlay.
+The Supabase schema is in `supabase/migrations/20261106_create_beauty_data.sql`. The frontend uses only the public publishable key, never a service role key. OpenAI is not configured or called; adding it later requires a server side endpoint so a private API key is not exposed to the browser.
 
-## Boundaries
-
-Camera lifecycle, model initialization, region mapping, and canvas drawing are independent of the dashboard. Future makeup rendering can consume landmark results without changing the camera permission flow. Future AI orchestration and persistence should be separate services; no backend is needed in this phase.
-
-## Dependencies
-
-Runtime: React, React DOM, MediaPipe Tasks Vision, Lucide icons. Development: Vite, TypeScript, Vitest, React plugin, React type packages.
-
-MediaPipe runtime and model URLs are fixed in `src/vision/faceLandmarker.ts`. Production deployment should serve versioned, self-hosted copies when offline operation, content security policy, or third-party asset availability becomes a requirement.
+MediaPipe model and WASM runtime load from versioned public URLs. The camera starts only after a user action and stops when leaving the relevant page. Browser speech recognition is optional and its availability varies by browser.
