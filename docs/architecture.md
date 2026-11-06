@@ -1,6 +1,6 @@
 # NEYA architecture
 
-NEYA is a Vite, React, and TypeScript web app. The live face studio and Explore preview run MediaPipe Face Landmarker in the browser. `src/vision/makeup.ts` draws translucent makeup layers on a canvas using face landmarks. This visual preview is intentionally approximate.
+NEYA is a Vite, React, and TypeScript web app. Live Makeup and Explore share the camera and makeup preview. MediaPipe Face Landmarker runs in the browser. `src/vision/makeup.ts` draws translucent makeup layers on a canvas using face landmarks. This visual preview is intentionally approximate. `src/data/catalog.ts` holds a small static India product catalogue and ranks colour-family suggestions; its swatches are editorial estimates.
 
 `src/data/beauty.ts` defines products, looks, and profile data. The app saves a versioned copy in localStorage. `src/cloud.ts` connects to Supabase only when public configuration is present. After email link authentication, `src/App.tsx` reads the user's `beauty_data` row, merges local products and looks, and debounces updates back to Supabase. The table has row level security policies for each user's own row. Product images are stripped from cloud payloads unless the profile explicitly permits photo sync. Face photos and camera frames are never included in saved data.
 

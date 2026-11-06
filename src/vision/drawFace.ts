@@ -3,6 +3,21 @@ import { regionCenters, type RegionName } from './regions';
 
 export type OverlayMode = 'mesh' | 'regions' | 'off';
 
+export function drawPreviewMesh(ctx: CanvasRenderingContext2D, landmarks: NormalizedLandmark[], width: number, height: number, mirrored = false) {
+  ctx.save();
+  ctx.strokeStyle = 'rgba(241, 255, 245, .13)';
+  ctx.lineWidth = Math.max(.7, width * .0007);
+  ctx.beginPath();
+  for (const [index, connection] of FaceLandmarker.FACE_LANDMARKS_TESSELATION.entries()) {
+    if (index % 2 || !landmarks[connection.start] || !landmarks[connection.end]) continue;
+    const a = landmarks[connection.start], b = landmarks[connection.end];
+    ctx.moveTo((mirrored ? 1 - a.x : a.x) * width, a.y * height);
+    ctx.lineTo((mirrored ? 1 - b.x : b.x) * width, b.y * height);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
 const LABELS: Partial<Record<RegionName, string>> = {
   leftEye: 'EYE', rightEye: 'EYE', lips: 'LIPS',
   leftCheek: 'CHEEK', rightCheek: 'CHEEK', forehead: 'FOREHEAD', nose: 'NOSE', jaw: 'JAW',

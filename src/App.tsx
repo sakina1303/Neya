@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  Aperture, ArrowRight, Bookmark, Camera, CameraOff, Check, ChevronDown, CircleHelp,
-  Eye, Focus, LayoutGrid, Menu, ScanFace, Settings2, ShieldCheck,
-  Sparkles, Video, X,
+  Aperture, ArrowRight, Bookmark, ChevronDown, CircleHelp, Focus, LayoutGrid, Menu, ScanFace, Settings2, ShieldCheck, Sparkles,
 } from 'lucide-react';
-import { useFaceSession } from './hooks/useFaceSession';
-import type { OverlayMode } from './vision/drawFace';
 import heroPortrait from './assets/hero-portrait.png';
 import { ExplorePage } from './ExplorePage';
 import { CollectionPage } from './CollectionPage';
@@ -14,13 +10,7 @@ import { SavedLooksPage } from './SavedLooksPage';
 import { clearBeautyData, emptyData, loadBeautyData, saveBeautyData, type BeautyData, type SavedLook } from './data/beauty';
 import { cloud, cloudSafeData, isBeautyData, mergeBeautyData } from './cloud';
 
-const displayStatus = {
-  idle: 'Camera off', requesting: 'Requesting access', 'loading-model': 'Loading face tracker',
-  searching: 'Looking for your face', tracking: 'Face tracking active', error: 'Camera needs attention',
-};
-
 function App() {
-  const session = useFaceSession();
   const [view, setView] = useState<'dashboard' | 'studio' | 'explore' | 'collection' | 'profile' | 'looks'>('dashboard');
   const [menuOpen, setMenuOpen] = useState(false);
   const [beauty, setBeauty] = useState<BeautyData>(loadBeautyData);
@@ -31,11 +21,10 @@ function App() {
   const [cloudError, setCloudError] = useState('');
   const beautyRef = useRef(beauty);
   beautyRef.current = beauty;
-  const isActive = !['idle', 'error'].includes(session.state.status);
 
   const openStudio = () => { setView('studio'); setMenuOpen(false); };
-  const navigate = (next: typeof view) => { if (next !== 'studio') session.stop(); setView(next); setMenuOpen(false); };
-  const backHome = () => { session.stop(); setView('dashboard'); setMenuOpen(false); };
+  const navigate = (next: typeof view) => { setView(next); setMenuOpen(false); };
+  const backHome = () => { setView('dashboard'); setMenuOpen(false); };
   useEffect(() => { setStorageError(!saveBeautyData(beauty)); }, [beauty]);
   useEffect(() => {
     const client = cloud;
@@ -99,7 +88,7 @@ function App() {
       <div className="sidebar-caption">YOUR BEAUTY SPACE</div>
       <nav aria-label="Main navigation" className="nav-list">
         <button className={`nav-item ${view === 'dashboard' ? 'active' : ''}`} onClick={backHome}><LayoutGrid size={18} /> Dashboard</button>
-        <button className={`nav-item ${view === 'studio' ? 'active' : ''}`} onClick={openStudio}><ScanFace size={18} /> Face studio <span className="nav-live" /></button>
+        <button className={`nav-item ${view === 'studio' ? 'active' : ''}`} onClick={openStudio}><ScanFace size={18} /> Live makeup <span className="nav-live" /></button>
         <button className={`nav-item ${view === 'explore' ? 'active' : ''}`} onClick={() => navigate('explore')}><Sparkles size={18} /> Explore looks</button>
       </nav>
       <div className="sidebar-caption tools-caption">YOUR TOOLS</div>
@@ -117,7 +106,7 @@ function App() {
     <div className="main-column">
       <header className="topbar">
         <button className="mobile-menu icon-button" aria-label="Open menu" onClick={() => setMenuOpen(!menuOpen)}><Menu size={22} /></button>
-        <div className="breadcrumb">YOUR SPACE <span>/</span> <strong>{({ dashboard: 'DASHBOARD', studio: 'FACE STUDIO', explore: 'EXPLORE LOOKS', collection: 'MY COLLECTION', profile: 'BEAUTY PROFILE', looks: 'SAVED LOOKS' } as const)[view]}</strong></div>
+        <div className="breadcrumb">YOUR SPACE <span>/</span> <strong>{({ dashboard: 'DASHBOARD', studio: 'LIVE MAKEUP', explore: 'EXPLORE LOOKS', collection: 'MY COLLECTION', profile: 'BEAUTY PROFILE', looks: 'SAVED LOOKS' } as const)[view]}</strong></div>
         <div className="topbar-right"><span className="phase-pill"><span /> YOUR BEAUTY SPACE</span><button className="help-button" title="Privacy information" onClick={() => navigate('profile')}><CircleHelp size={19} /></button></div>
       </header>
 
@@ -130,29 +119,12 @@ function App() {
 
         <section className="section-head"><div><div className="section-kicker">LET'S BEGIN</div><h2>What would you like to do?</h2></div><span>YOUR JOURNEY, YOUR WAY</span></section>
         <div className="feature-grid">
-          <button className="feature-card available" onClick={openStudio}><div className="feature-icon coral"><ScanFace size={25} /></div><div className="feature-label"><span>01 · LIVE TRACKING</span><ArrowRight size={19} /></div><h3>Start face tracking</h3><p>Open your camera and see subtle face mapping that moves with you.</p><div className="feature-foot">OPEN STUDIO <ArrowRight size={15} /></div></button>
+          <button className="feature-card available" onClick={openStudio}><div className="feature-icon coral"><ScanFace size={25} /></div><div className="feature-label"><span>01 · LIVE MAKEUP</span><ArrowRight size={19} /></div><h3>Start live makeup</h3><p>Open your camera, try products on your moving face, and switch shades as you go.</p><div className="feature-foot">OPEN LIVE STUDIO <ArrowRight size={15} /></div></button>
           <button className="feature-card available" onClick={() => navigate('explore')}><div className="feature-icon lilac"><Sparkles size={25} /></div><div className="feature-label"><span>02 · VIRTUAL STUDIO</span><ArrowRight size={19} /></div><h3>Try on looks</h3><p>Preview shades and complete looks right on your face.</p><div className="feature-foot">EXPLORE LOOKS <ArrowRight size={15} /></div></button>
           <button className="feature-card available" onClick={() => navigate('collection')}><div className="feature-icon peach"><Aperture size={25} /></div><div className="feature-label"><span>03 · YOUR PRODUCTS</span><ArrowRight size={19} /></div><h3>My collection</h3><p>Bring your favorite products together in one personal beauty space.</p><div className="feature-foot">OPEN COLLECTION <ArrowRight size={15} /></div></button>
         </div>
         <div id="about-phase" className="foundation-strip"><div className="strip-icon"><Focus size={21} /></div><div><strong>Your space is taking shape.</strong><p>Try-on and collection tools work now. Sign in under Beauty Profile for free cloud sync. AI services are off to avoid billing.</p></div><span>NEYA STUDIO</span></div>
-      </main> : view === 'explore' ? <ExplorePage data={beauty} onSaveLook={look => setBeauty(previous => ({ ...previous, looks: [look, ...previous.looks] }))} initialLook={initialLook} onClearInitialLook={() => setInitialLook(null)} /> : view === 'collection' ? <CollectionPage products={beauty.products} onChange={products => setBeauty(previous => ({ ...previous, products }))} /> : view === 'profile' ? <ProfilePage data={beauty} onChange={profile => setBeauty(previous => ({ ...previous, profile }))} onDeleteAll={deleteAll} cloudConnected={cloudReady} cloudAvailable={Boolean(cloud)} accountEmail={cloudUser?.email} onSignIn={signIn} onSignOut={signOut} cloudError={cloudError} /> : view === 'looks' ? <SavedLooksPage looks={beauty.looks} onOpen={openLook} onChange={looks => setBeauty(previous => ({ ...previous, looks }))} /> : <main className="page studio-page">
-        <div className="studio-heading"><div><div className="section-kicker">THE FIRST STEP TO YOUR LOOK</div><h1>Your face studio<span>.</span></h1><p>See how NEYA maps your features in real time. Move naturally and watch the tracking follow.</p></div><button className="text-back" onClick={backHome}>← Back to dashboard</button></div>
-
-        <div className="studio-grid"><section className="camera-panel">
-          <div className="panel-top"><div><div className="camera-symbol"><Video size={18} /></div><strong>Live camera</strong><span className="panel-subtitle">Your face, in focus</span></div><div className={`status-badge ${session.state.status === 'tracking' ? 'good' : ''}`}><i />{displayStatus[session.state.status]}</div></div>
-          <div className="camera-stage">
-            <div className="camera-media"><video ref={session.videoRef} autoPlay muted playsInline aria-label="Live webcam preview" /><canvas ref={session.canvasRef} aria-label="Face landmark overlay" /></div>
-            {!isActive && <div className="camera-empty"><div className="camera-empty-icon">{session.state.status === 'error' ? <CameraOff size={35} /> : <Camera size={35} />}</div><h2>{session.state.status === 'error' ? 'Camera needs attention' : 'Your mirror is ready'}</h2><p>{session.state.error || 'Allow camera access to start real-time face tracking. Your video stays on this device.'}</p><button className="light-button" onClick={session.start}>{session.state.status === 'error' ? 'Try again' : 'Enable camera'} <ArrowRight size={17} /></button></div>}
-            {isActive && <><div className="camera-corner tl" /><div className="camera-corner tr" /><div className="camera-corner bl" /><div className="camera-corner br" /><div className="camera-overlay-info"><span className="rec-dot" /> {session.state.status === 'tracking' ? 'TRACKING FACE' : session.state.status === 'searching' ? 'POSITION YOUR FACE' : 'GETTING READY'}</div></>}
-          </div>
-          <div className="camera-controls"><div className="mode-switch" role="group" aria-label="Face overlay mode">{(['mesh', 'regions', 'off'] as OverlayMode[]).map(option => <button key={option} className={session.mode === option ? 'selected' : ''} onClick={() => session.setMode(option)} disabled={!isActive}>{option === 'mesh' ? 'Face mesh' : option === 'regions' ? 'Regions' : 'No overlay'}</button>)}</div><button className="end-button" onClick={session.stop} disabled={!isActive}><X size={16} /> End camera</button></div>
-        </section>
-
-        <aside className="insight-column"><div className="insight-card"><div className="insight-kicker"><ScanFace size={17} /> LIVE INSIGHTS</div><h3>Face intelligence</h3><p className="insight-intro">A look at what your camera is detecting right now.</p><div className="metric-row"><span><Eye size={17} /> Face status</span><strong className={session.state.status === 'tracking' ? 'positive' : ''}>{session.state.status === 'tracking' ? 'Detected' : session.state.status === 'searching' ? 'Searching' : 'Waiting'}</strong></div><div className="metric-row"><span><Focus size={17} /> Landmarks</span><strong>{session.state.landmarkCount || '—'}</strong></div><div className="metric-row"><span><Aperture size={17} /> Tracking rate</span><strong>{session.state.framesPerSecond ? `${session.state.framesPerSecond} fps` : '—'}</strong></div><div className="insight-tip"><span>✦</span><p>{session.state.status === 'tracking' ? 'Nice! Turn your head gently to see the mesh follow your features.' : 'Sit in even lighting and keep your face inside the camera frame.'}</p></div></div>
-          <div className="insight-card mapping-card"><div className="insight-kicker"><Focus size={17} /> FACIAL MAPPING</div><h3>Mapped regions</h3><p className="insight-intro">Switch to “Regions” to see these live anchors.</p><div className="region-list">{['Eyes', 'Lips', 'Cheeks', 'Nose', 'Forehead', 'Jaw'].map(region => <div key={region}><span className="region-dot" />{region}<Check size={15} /></div>)}</div><small>Region markers are landmark anchors, not makeup detection.</small></div>
-          <div className="privacy-card"><ShieldCheck size={20} /><div><strong>Your camera, your control.</strong><p>Tracking runs in your browser. No video is saved or uploaded by NEYA.</p></div></div>
-        </aside></div>
-      </main>}
+      </main> : view === 'explore' || view === 'studio' ? <ExplorePage key={view} autoCamera={view === 'studio'} data={beauty} onSaveLook={look => setBeauty(previous => ({ ...previous, looks: [look, ...previous.looks] }))} onAddProduct={product => setBeauty(previous => ({ ...previous, products: [product, ...previous.products] }))} initialLook={initialLook} onClearInitialLook={() => setInitialLook(null)} /> : view === 'collection' ? <CollectionPage products={beauty.products} onChange={products => setBeauty(previous => ({ ...previous, products }))} /> : view === 'profile' ? <ProfilePage data={beauty} onChange={profile => setBeauty(previous => ({ ...previous, profile }))} onDeleteAll={deleteAll} cloudConnected={cloudReady} cloudAvailable={Boolean(cloud)} accountEmail={cloudUser?.email} onSignIn={signIn} onSignOut={signOut} cloudError={cloudError} /> : view === 'looks' ? <SavedLooksPage looks={beauty.looks} onOpen={openLook} onChange={looks => setBeauty(previous => ({ ...previous, looks }))} /> : null}
     </div>
     {storageError && <div className="storage-warning" role="alert">Browser storage is full or unavailable. Your latest changes may not be saved.</div>}
     {menuOpen && <button className="mobile-scrim" aria-label="Close menu" onClick={() => setMenuOpen(false)} />}

@@ -41,6 +41,11 @@ export const techniques: Partial<Record<Category, string[]>> = {
 };
 
 export const starterShades: { name: string; category: Category; color: string; finish: Finish }[] = [
+  { name: 'Warm beige', category: 'Foundation', color: '#b98b6e', finish: 'Natural' },
+  { name: 'Golden tan', category: 'Foundation', color: '#9b6c50', finish: 'Natural' },
+  { name: 'Deep neutral', category: 'Foundation', color: '#694937', finish: 'Natural' },
+  { name: 'Soft beige', category: 'Concealer', color: '#c69a79', finish: 'Natural' },
+  { name: 'Warm honey', category: 'Concealer', color: '#a97754', finish: 'Natural' },
   { name: 'Rosewood', category: 'Lipstick', color: '#a6565b', finish: 'Satin' },
   { name: 'Warm nude', category: 'Lipstick', color: '#a86e62', finish: 'Matte' },
   { name: 'Berry', category: 'Lipstick', color: '#7e3e61', finish: 'Glossy' },
@@ -48,9 +53,18 @@ export const starterShades: { name: string; category: Category; color: string; f
   { name: 'Rose', category: 'Blush', color: '#be6b7b', finish: 'Dewy' },
   { name: 'Copper', category: 'Eyeshadow', color: '#a46b4f', finish: 'Shimmer' },
   { name: 'Taupe', category: 'Eyeshadow', color: '#79665b', finish: 'Matte' },
+  { name: 'Soft rose', category: 'Eyeshadow', color: '#b7838b', finish: 'Matte' },
   { name: 'Espresso', category: 'Eyeliner', color: '#392b2a', finish: 'Matte' },
+  { name: 'Jet black', category: 'Eyeliner', color: '#1f2020', finish: 'Matte' },
+  { name: 'Deep black', category: 'Mascara', color: '#22201f', finish: 'Natural' },
   { name: 'Soft bronze', category: 'Contour', color: '#9a6550', finish: 'Natural' },
+  { name: 'Deep sculpt', category: 'Contour', color: '#6f493a', finish: 'Natural' },
   { name: 'Champagne', category: 'Highlighter', color: '#e1bb8d', finish: 'Shimmer' },
+  { name: 'Rose gold', category: 'Highlighter', color: '#d6a394', finish: 'Shimmer' },
+  { name: 'Petal shine', category: 'Lip gloss', color: '#ca8494', finish: 'Glossy' },
+  { name: 'Warm shine', category: 'Lip gloss', color: '#b77b5e', finish: 'Glossy' },
+  { name: 'Rose outline', category: 'Lip liner', color: '#8c4f58', finish: 'Matte' },
+  { name: 'Warm nude outline', category: 'Lip liner', color: '#815b50', finish: 'Matte' },
 ];
 
 export const emptyData: BeautyData = {
@@ -81,10 +95,10 @@ export function suggestedLayers(occasion: string, products: Product[], ownedOnly
   };
   const [lip, blush, eye] = palette[occasion] ?? ['#a86e62', '#d99078', '#8a7062'];
   const defaults: LookLayers = {
-    Lipstick: { color: lip, intensity: .65, finish: 'Satin' },
-    Blush: { color: blush, intensity: .35, finish: 'Natural' },
-    Eyeshadow: { color: eye, intensity: .33, finish: 'Matte' },
-    Eyeliner: { color: '#42352f', intensity: .65, finish: 'Matte' },
+    Lipstick: { color: lip, intensity: .8, finish: 'Satin' },
+    Blush: { color: blush, intensity: .7, finish: 'Natural' },
+    Eyeshadow: { color: eye, intensity: .7, finish: 'Matte' },
+    Eyeliner: { color: '#42352f', intensity: .75, finish: 'Matte' },
   };
   for (const category of Object.keys(defaults) as Category[]) {
     const match = products.find(product => product.category === category && (!ownedOnly || product.owned));
