@@ -6,6 +6,8 @@ Run `npm run build` for TypeScript and production bundling. Run `npm test` for t
 
 Observed on 6 November 2026: the production build completed and the region mapping unit test passed. In the local in-app browser, a real webcam stream opened, the Face Landmarker reported 478 landmarks for one detected face, and the processing indicator showed approximately 29–30 fps. The Regions control became selected; End camera returned the UI to its idle state. The agent could not direct the person in front of the camera to move, so movement-following, reacquisition, and alternate device/browser checks remain open acceptance steps.
 
+Visual refinement check on 6 November 2026: the editorial dashboard portrait rendered in the local preview. The lighter live mesh rendered over a real face while tracking reported 478 landmarks at roughly 28–30 fps. End camera stopped the session. The device owner should still judge the mesh styling and movement quality under their normal camera setup.
+
 ## Physical webcam acceptance test
 
 Use a laptop or phone with a real camera on localhost or HTTPS:

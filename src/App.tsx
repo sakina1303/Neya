@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useFaceSession } from './hooks/useFaceSession';
 import type { OverlayMode } from './vision/drawFace';
+import heroPortrait from './assets/hero-portrait.png';
 
 const displayStatus = {
   idle: 'Camera off', requesting: 'Requesting access', 'loading-model': 'Loading face tracker',
@@ -55,7 +56,7 @@ function App() {
         <div className="welcome-line"><span>YOUR PERSONAL BEAUTY SPACE</span><span>✦ &nbsp; MADE FOR YOUR FACE</span></div>
         <section className="hero">
           <div className="hero-content"><div className="eyebrow"><Sparkles size={14} /> THE BEAUTY OF BEING YOU</div><h1>Meet your<br /><em>personal</em> makeup artist.</h1><p>Discover what works for your face, starting with precise, real-time face tracking.</p><button className="primary-button" onClick={openStudio}>Open face studio <ArrowRight size={18} /></button><div className="hero-foot"><span className="star">✳</span> A more personal way to do makeup starts here.</div></div>
-          <div className="hero-art" aria-hidden="true"><div className="art-orbit orbit-one" /><div className="art-orbit orbit-two" /><div className="art-face"><div className="art-hair" /><div className="art-neck" /><div className="art-head"><i className="art-brow left" /><i className="art-brow right" /><i className="art-eye left" /><i className="art-eye right" /><i className="art-nose" /><i className="art-mouth" /></div></div><div className="art-spark one">✦</div><div className="art-spark two">✧</div><div className="art-tag tag-one">FACE MAPPING</div><div className="art-tag tag-two">REAL-TIME TRACKING</div></div>
+          <div className="hero-art" aria-hidden="true"><img className="hero-portrait" src={heroPortrait} alt="" /><div className="portrait-glow" /></div>
         </section>
 
         <section className="section-head"><div><div className="section-kicker">LET'S BEGIN</div><h2>What would you like to do?</h2></div><span>YOUR JOURNEY, YOUR WAY</span></section>

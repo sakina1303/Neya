@@ -32,15 +32,18 @@ export function drawFace(
   const offsetX = (width - video.videoWidth * scale) / 2;
   const offsetY = (height - video.videoHeight * scale) / 2;
   const point = (landmark: Pick<NormalizedLandmark, 'x' | 'y'>) => ({
-    x: offsetX + landmark.x * video.videoWidth * scale,
+    // Mirror coordinates to match the front-facing video, while keeping labels readable.
+    x: width - (offsetX + landmark.x * video.videoWidth * scale),
     y: offsetY + landmark.y * video.videoHeight * scale,
   });
 
   if (mode === 'mesh') {
-    ctx.lineWidth = Math.max(0.7, dpr * 0.65);
-    ctx.strokeStyle = 'rgba(236, 255, 231, .43)';
+    // An airy technical mesh shows tracking without turning the face into a mask.
+    ctx.lineWidth = Math.max(0.55, dpr * 0.45);
+    ctx.strokeStyle = 'rgba(224, 248, 237, .26)';
     ctx.beginPath();
-    for (const connection of FaceLandmarker.FACE_LANDMARKS_TESSELATION) {
+    for (const [index, connection] of FaceLandmarker.FACE_LANDMARKS_TESSELATION.entries()) {
+      if (index % 2 === 1) continue;
       const start = landmarks[connection.start];
       const end = landmarks[connection.end];
       if (!start || !end) continue;
@@ -50,8 +53,8 @@ export function drawFace(
       ctx.lineTo(b.x, b.y);
     }
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(246, 229, 188, .95)';
-    ctx.lineWidth = 2 * dpr;
+    ctx.strokeStyle = 'rgba(238, 247, 226, .62)';
+    ctx.lineWidth = Math.max(0.9, dpr * 0.75);
     for (const connections of [FaceLandmarker.FACE_LANDMARKS_FACE_OVAL, FaceLandmarker.FACE_LANDMARKS_LIPS, FaceLandmarker.FACE_LANDMARKS_LEFT_EYE, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE]) {
       ctx.beginPath();
       for (const connection of connections) {
@@ -62,26 +65,38 @@ export function drawFace(
       }
       ctx.stroke();
     }
+    ctx.fillStyle = 'rgba(248, 255, 238, .8)';
+    for (const index of [10, 1, 33, 133, 263, 362, 61, 291, 152]) {
+      const landmark = landmarks[index];
+      if (!landmark) continue;
+      const { x, y } = point(landmark);
+      ctx.beginPath();
+      ctx.arc(x, y, 1.7 * dpr, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   if (mode === 'regions') {
     const centers = regionCenters(landmarks);
-    ctx.font = `${Math.round(10 * dpr)}px "DM Sans", sans-serif`;
-    ctx.textAlign = 'center';
+    ctx.font = `600 ${Math.round(9 * dpr)}px "DM Sans", sans-serif`;
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     for (const [name, center] of Object.entries(centers) as [RegionName, { x: number; y: number }][]) {
       const label = LABELS[name];
       if (!label) continue;
       const { x, y } = point(center);
-      const textWidth = ctx.measureText(label).width;
-      const pillWidth = textWidth + 20 * dpr;
-      const pillHeight = 24 * dpr;
-      ctx.fillStyle = 'rgba(37, 53, 45, .83)';
+      const direction = x < width / 2 ? 1 : -1;
+      const endX = x + direction * 14 * dpr;
+      ctx.strokeStyle = 'rgba(240, 250, 237, .8)';
+      ctx.lineWidth = dpr;
       ctx.beginPath();
-      ctx.roundRect(x - pillWidth / 2, y - pillHeight / 2, pillWidth, pillHeight, pillHeight / 2);
-      ctx.fill();
-      ctx.fillStyle = '#f8f5e9';
-      ctx.fillText(label, x, y + dpr);
+      ctx.arc(x, y, 4 * dpr, 0, Math.PI * 2);
+      ctx.moveTo(x + direction * 4 * dpr, y);
+      ctx.lineTo(endX, y);
+      ctx.stroke();
+      ctx.fillStyle = '#f5f8ed';
+      const textWidth = ctx.measureText(label).width;
+      ctx.fillText(label, direction > 0 ? endX + 3 * dpr : endX - textWidth - 3 * dpr, y);
     }
   }
 }
