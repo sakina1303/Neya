@@ -93,9 +93,19 @@ export function drawMakeup(ctx: CanvasRenderingContext2D, landmarks: NormalizedL
   const lip = layers.Lipstick;
   if (lip) {
     ctx.save();
-    ctx.fillStyle = colorWithAlpha(lip.color, lip.intensity * (lip.technique === 'Soft blur' ? .55 : .82));
+    const opacity = lip.intensity * (lip.technique === 'Soft blur' ? .72 : 1);
+    // The colour pass keeps the photographed lip's light and texture detail.
+    ctx.globalCompositeOperation = 'color';
+    ctx.fillStyle = colorWithAlpha(lip.color, opacity);
     ctx.beginPath(); path(upperLip); ctx.fill();
     ctx.beginPath(); path(lowerLip); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = colorWithAlpha(lip.color, opacity * .32);
+    ctx.strokeStyle = colorWithAlpha(lip.color, opacity * .45);
+    ctx.lineWidth = Math.max(.8, faceWidth * .003);
+    ctx.lineJoin = 'round';
+    ctx.beginPath(); path(upperLip); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); path(lowerLip); ctx.fill(); ctx.stroke();
     ctx.restore();
   }
   const liner = layers['Lip liner'];
